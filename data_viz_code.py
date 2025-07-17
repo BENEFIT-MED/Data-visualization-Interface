@@ -24,7 +24,7 @@ st.markdown("""
             left: 0;
             width: 100%;
             background-color: white;
-            z-index: 1000;
+            z-index: 800;
             border-bottom: 2px solid orange;
             padding: 0;
             margin: 0;
@@ -37,7 +37,7 @@ st.markdown("""
         }
 
         .main-content {
-            padding-top: 100px;  /* ajuste selon la hauteur de l’image */
+            padding-top: 120px;  /* ajuste selon la hauteur de l’image */
         }
 
         /* Styles supplémentaires existants */
