@@ -37,7 +37,7 @@ st.markdown("""
         }
 
         .main-content {
-            padding-top: 120px;  /* ajuste selon la hauteur de l’image */
+            padding-top: 100px;  /* ajuste selon la hauteur de l’image */
         }
 
         /* Styles supplémentaires existants */
