@@ -46,13 +46,15 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Header
+side_image2 = "https://i.imgur.com/F0dqfM8.png"
+st.image(side_image2, use_container_width= True)
 st.markdown("""
     <div style='text-align: center; margin-bottom: 30px;'>
         <h1 style='color: #2c3e50; text-decoration: none; margin-bottom: 10px;'>
-            📊 Advanced Data Explorer
+            DATA EXPLORER
         </h1>
         <h3 style='color: #7f8c8d; font-weight: normal;'>
-            Interactive statistical analysis and visualization tool
+            Interactive statistical analysis and visualization
         </h3>
     </div>
 """, unsafe_allow_html=True)
@@ -64,27 +66,51 @@ def detect_separator(file):
     sniffer = csv.Sniffer()
     dialect = sniffer.sniff(sample)
     return dialect.delimiter
-#creation of a sample dataset
+
+# Creation of a sample dataset
 @st.cache_data
 def generate_sample_data():
-    """Generate a comprehensive sample dataset with more realistic features."""
-    np.random.seed(0)
-    n = 500  
-    dates = pd.date_range(start='2020-01-01', periods=n, freq='D')
-    return pd.DataFrame({
-        "Date": dates,
-        "Gender": np.random.choice(["Male", "Female", "Other", np.nan], size=n, p=[0.45, 0.45, 0.08, 0.02]),
-        "City": np.random.choice(["Paris", "Lyon", "Marseille", "Toulouse", "Nice"], size=n),
-        "Department": np.random.choice(["Sales", "Marketing", "IT", "HR", "Finance"], size=n),
-        "Group": np.random.choice(["A", "B", "C", "D"], size=n),
-        "Age": np.clip(np.random.normal(35, 10, size=n).round(1), 18, 70),
-        "Salary": np.clip(np.random.normal(50000, 15000, size=n).round(2), 40000, 120000),
-        "Satisfaction": np.random.uniform(1, 10, size=n).round(1),
-        "Work_Hours": np.clip(np.random.normal(40, 5, size=n).round(1), 20, 60),
-        "Performance": np.clip(np.random.normal(75, 15, size=n).round(1), 0, 100),
-        "Tenure": np.random.randint(0, 10, size=n),
-        "Active": np.random.choice([True, False], size=n, p=[0.7, 0.3])
+    """Generate a comprehensive metabolite dataset with realistic features."""
+    np.random.seed(42)
+    n = 300 
+    genotypes = ['Wild Type', 'Mutant A', 'Mutant B', 'Transgenic']
+    tissues = ['Leaf', 'Root', 'Stem', 'Flower']
+    treatments = ['Control', 'Drought', 'Salt', 'Cold', 'Heat']
+    time_points = ['0h', '6h', '12h', '24h', '48h', '72h']
+    
+    secondary_metabolites = [
+        'Chlorogenic Acid', 'Rutin', 'Quercetin', 'Kaempferol', 
+        'Caffeic Acid', 'Ferulic Acid', 'Sinapic Acid', 'Anthocyanins'
+    ]
+    
+    df = pd.DataFrame({
+        "Genotype": np.random.choice(genotypes, size=n, p=[0.4, 0.2, 0.2, 0.2]),
+        "Tissue": np.random.choice(tissues, size=n, p=[0.4, 0.3, 0.2, 0.1]),
+        "Treatment": np.random.choice(treatments, size=n, p=[0.3, 0.2, 0.2, 0.15, 0.15]),
+        "Time_Point": np.random.choice(time_points, size=n, p=[0.2, 0.15, 0.15, 0.2, 0.2, 0.1]),
+        "Growth_Condition": np.random.choice(['Field', 'Greenhouse', 'Growth Chamber'], size=n),
     })
+    
+    for met in secondary_metabolites:
+        if met in ['Anthocyanins']:
+            base = np.random.normal(5, 2, n)
+            stress_effect = np.where(df['Treatment'].isin(['Cold', 'Drought']), np.random.normal(10, 3, n), 0)
+            genotype_effect = np.where(df['Genotype'] == 'Mutant A', np.random.normal(-3, 1, n), 0)
+            df[met] = np.clip(base + stress_effect + genotype_effect, 0.5, 30).round(2)
+            
+        elif met in ['Chlorogenic Acid', 'Rutin']:
+            base = np.random.normal(8, 3, n)
+            tissue_effect = np.where(df['Tissue'].isin(['Leaf', 'Flower']), np.random.normal(5, 2, n), 0)
+            df[met] = np.clip(base + tissue_effect, 0.5, 25).round(2)
+            
+        else:
+            df[met] = np.clip(np.random.lognormal(1.5, 0.5, n), 0.1, 15).round(2)
+    
+    for col in secondary_metabolites:
+        mask = np.random.rand(n) < 0.05
+        df.loc[mask, col] = np.nan
+    
+    return df
 
 def check_normality(data, alpha=0.05):
     """Check if data is normally distributed using Shapiro-Wilk test."""
@@ -155,13 +181,12 @@ def perform_statistical_test(df, x_col, y_col):
             test_used = "Mann-Whitney U"
             posthoc_method = None
 
-    # Format of the p-value
-    if p < 0.001:
-        p_str = "p < 0.001"
+    if p < 0.1:
+        p_str = "p < 0.1"
     else:
         p_str = f"p = {p:.2f}"
     
-    interpretation = "Significant difference" if p < 0.05 else "No significant difference"
+    interpretation = "Significant difference" if p < 0.1 else "No significant difference"
     
     test_results.update({
         "test": test_used,
@@ -184,7 +209,6 @@ def perform_posthoc_test(df, x_col, y_col, test_results):
         data = df[[x_col, y_col]].dropna()
         tukey = pairwise_tukeyhsd(endog=data[y_col], groups=data[x_col], alpha=0.05)
         
-        
         tukey_df = pd.DataFrame(data=tukey._results_table.data[1:], columns=tukey._results_table.data[0])
         tukey_df = tukey_df[tukey_df['reject']].sort_values('meandiff', ascending=False)
         
@@ -198,7 +222,6 @@ def perform_posthoc_test(df, x_col, y_col, test_results):
         
         data = df[[x_col, y_col]].dropna()
         dunn_results = sp.posthoc_dunn(data, val_col=y_col, group_col=x_col, p_adjust='holm')
-        
         
         significant_pairs = []
         for i in range(len(dunn_results)):
@@ -222,8 +245,7 @@ def plot_statistical_results(df, x_col, y_col, test_results):
     """Create visualization with statistical annotations."""
     fig = px.box(df, x=x_col, y=y_col, color=x_col, points="all",
                 title=f"{y_col} by {x_col}<br>{test_results['test']}: {test_results['p_str']} ({test_results['interpretation']})")
-    
-    
+
     if "posthoc" in test_results and test_results["posthoc"] is not None:
         if test_results["posthoc"]["method"] == ["Tukey HSD", "Dunn's test"]:
              
@@ -251,8 +273,9 @@ def plot_statistical_results(df, x_col, y_col, test_results):
     
     return fig
 
-# Sidebar options
 with st.sidebar:
+    side_image_url = "https://i.imgur.com/hoAtwrV.jpeg" 
+    st.sidebar.image(side_image_url, use_container_width = True)
     st.header("📂 Data Upload")
     uploaded_file = st.file_uploader("Upload File", type=["csv", "xlsx", "json"], 
                                    help="Upload your dataset in CSV, Excel, or JSON format",
@@ -293,9 +316,8 @@ with st.sidebar:
 
     else:
         df = generate_sample_data()
-        st.info("💡 Using sample dataset. Upload your own data to analyze.")
+        st.info("💡 Using a sample dataset. Upload your own data to analyze.")
     
-    # Data type detection
     cat_vars = df.select_dtypes(include=["object", "category", "bool"]).columns.tolist()
     num_vars = df.select_dtypes(include=["number"]).columns.tolist()
     date_vars = df.select_dtypes(include=["datetime"]).columns.tolist()
@@ -332,14 +354,11 @@ with st.sidebar:
             help="Select numerical variable to compare"
         )
         
-        
         graph_type = st.selectbox(
             "Graph Type",
             ["Box Plot", "Violin Plot", "Strip Plot", "Bar Plot"],
             help="Select the type of visualization to display"
         )
-        
-        
         color_var = st.selectbox(
             "Color by (Optional)",
             options=["None"] + cat_vars,
@@ -366,13 +385,11 @@ with st.sidebar:
             help="Select second numerical variable"
         )
         
-        
         graph_type_corr = st.selectbox(
             "Graph Type",
             ["Scatter Plot", "Line Plot", "Hexbin Plot", "Density Contour"],
             help="Select the type of visualization to display"
         )
-        
         
         color_var_corr = st.selectbox(
             "Color by (Optional)",
@@ -391,12 +408,10 @@ with st.expander("View Data", expanded=True):
     st.dataframe(df.head(100), height=300)
     st.caption(f"Showing {len(df)} rows from original dataset")
 
-
 st.subheader("📈 Statistical Analysis")
 
 if analysis_type == "Comparative":
     st.markdown(f"### Comparative Analysis: {y_var} by {x_var}")
-    
     
     test_results, error = perform_statistical_test(df, x_var, y_var)
     
@@ -423,7 +438,6 @@ if analysis_type == "Comparative":
             variance=test_results["variance"]
         ), unsafe_allow_html=True)
         
-        
         if show_posthoc and test_results["p_value"] < 0.05 and test_results["posthoc_method"] is not None:
             posthoc_results = perform_posthoc_test(df, x_var, y_var, test_results)
             test_results["posthoc"] = posthoc_results
@@ -449,7 +463,6 @@ if analysis_type == "Comparative":
                     with st.expander("Show full Dunn's test matrix"):
                         st.dataframe(posthoc_results["results"].style.format("{:.3f}"))
         
-        
         title = f"{y_var} by {x_var}<br>{test_results['test']}: {test_results['p_str']} ({test_results['interpretation']})"
         
         try:
@@ -463,16 +476,15 @@ if analysis_type == "Comparative":
                 fig = px.strip(df, x=x_var, y=y_var, color=color_var,
                               title=title, hover_data=df.columns)
             elif graph_type == "Bar Plot":
-                #calculate mean and standard deviation for error bars
                 if color_var:
                     df_agg = df.groupby([x_var, color_var])[y_var].agg(['mean', 'std', 'count']).reset_index()
-                    df_agg['se'] = df_agg['std'] / np.sqrt(df_agg['count']) #standard error
+                    df_agg['se'] = df_agg['std'] / np.sqrt(df_agg['count']) 
 
-                    fig = px.bar(df_agg, x = x_var, y = 'mean', color = color_var,
-                                 error_y = 'se', #using standard error for error bar
-                                 title = title,
-                                 labels = {'mean': y_var},
-                                 hover_data = {'mean':':.2f', 'se':':.2f', 'std':':.2f', 'count': True})
+                    fig = px.bar(df_agg, x=x_var, y='mean', color=color_var,
+                                 error_y='se', 
+                                 title=title,
+                                 labels={'mean': y_var},
+                                 hover_data={'mean':':.2f', 'se':':.2f', 'std':':.2f', 'count': True})
                 else:
                     df_agg = df.groupby(x_var)[y_var].agg(['mean', 'std', 'count']).reset_index()
                     
@@ -481,9 +493,8 @@ if analysis_type == "Comparative":
                     fig = px.bar(df_agg, x=x_var, y='mean',
                             error_y='se', title=title,
                             labels={'mean': y_var},
-                            hover_data={'mean': ':.2f', 'se': ':.2f', 'std': ':.2f','count': True})
-                    #customize error bars 
-                fig.update_traces(error_y_thickness = 1.5, error_y_color = 'black')
+                            hover_data={'mean': ':.2f', 'se': ':.2f', 'std': ':.2f','count': True}) 
+                fig.update_traces(error_y_thickness=1.5, error_y_color='black')
             
             st.plotly_chart(fig, use_container_width=True)
         except Exception as e:
@@ -491,8 +502,7 @@ if analysis_type == "Comparative":
 
 elif analysis_type == "Correlational":
     st.markdown(f"### Correlational Analysis: {y_var_corr} vs {x_var_corr}")
-    
-    
+
     corr = df[[x_var_corr, y_var_corr]].corr().iloc[0,1]
     
     st.markdown(f"""
@@ -522,7 +532,6 @@ elif analysis_type == "Correlational":
                          hover_data=df.columns)
             
         elif graph_type_corr == "Hexbin Plot":
-            # Plotly doesn't have native hexbin, so we'll use density heatmap
             fig = px.density_heatmap(df, x=x_var_corr, y=y_var_corr,
                                    title=title + " (Density Heatmap)",
                                    hover_data=df.columns)
@@ -555,13 +564,11 @@ elif analysis_type == "Correlational":
         if trendline and graph_type_corr == "Scatter Plot":
             st.markdown("#### Residual Analysis")
             
-            # Calculate residuals
             X = df[x_var_corr].values.reshape(-1, 1)
             Y = df[y_var_corr].values
             model = LinearRegression().fit(X, Y)
             residuals = Y - model.predict(X)
             
-            # Creation of the residual plot
             fig_res = px.scatter(
                 x=model.predict(X),
                 y=residuals,
@@ -573,14 +580,12 @@ elif analysis_type == "Correlational":
             fig_res.add_hline(y=0, line_dash="dash", line_color="red")
             st.plotly_chart(fig_res, use_container_width=True)
             
-            
             normal, norm_msg = check_normality(residuals)
             st.markdown(f"**Residuals normality check:** {norm_msg}")
             
     except Exception as e:
         st.error(f"Could not create {graph_type_corr}: {str(e)}")
 
-# Data export options
 with st.expander("💾 Export Data", expanded=False):
     st.write("### Export Options")
     export_format = st.radio(
@@ -629,7 +634,6 @@ with st.expander("💾 Export Data", expanded=False):
         except Exception as e:
             st.error(f"Error exporting data: {str(e)}")
 
-# Footer
 st.markdown("---")
 st.markdown("""
     <div style='text-align: center; color: black; font-size: 0.9em;'>
