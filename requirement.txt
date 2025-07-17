@@ -13,3 +13,14 @@ scikit_posthocs
 scipy
 statsmodels
 streamlit
+bokeh==2.4.3
+ipython
+matplotlib
+numpy==1.23.5
+pandas
+Pillow
+plotly
+scikit_posthocs
+scipy
+statsmodels
+streamlit
