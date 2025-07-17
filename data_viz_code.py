@@ -28,7 +28,7 @@ st.markdown("""
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
+            width: 1000%;
             background-color: white;
             z-index: 1000;
             border-bottom: 2px solid orange;
@@ -37,7 +37,7 @@ st.markdown("""
         }
 
         .main-content {
-            padding-top: 1000px;  /* Ajuste cette valeur si l’image est plus grande ou plus petite */
+            padding-top: 100px;  /* Ajuste cette valeur si l’image est plus grande ou plus petite */
         }
 
         /* Ton CSS existant (optionnel à conserver ici) */
