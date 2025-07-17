@@ -71,7 +71,7 @@ st.markdown("<div class='main-content'>", unsafe_allow_html=True)
 
 # Titre
 st.markdown("""
-    <div style='text-align: center; margin-bottom: 10px;'>
+    <div style='text-align: center; margin-bottom: 30px;'>
         <h1 style='color: #2c3e50; text-decoration: none; margin-bottom: 30px;'>
             BENEFIT-MED DATA EXPLORER
         </h1>
