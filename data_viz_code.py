@@ -30,9 +30,9 @@ st.markdown("""
             left: 0;
             width: 1000%;
             background-color: white;
-            z-index: 1000;
+            z-index: 100;
             border-bottom: 2px solid orange;
-            padding: 10px 0;
+            padding: 1000px 0;
             text-align: center;
         }
 
