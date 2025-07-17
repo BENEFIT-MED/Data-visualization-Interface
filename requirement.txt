@@ -1,0 +1,15 @@
+bokeh
+matplotlib
+numpy
+pandas
+seaborn
+io
+csv
+json
+datetime
+sklearn
+plotly
+scikit_posthocs
+scipy
+statsmodels
+streamlit
