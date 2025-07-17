@@ -37,7 +37,7 @@ st.markdown("""
         }
 
         .main-content {
-            padding-top: 150px;  /* Ajuste cette valeur si l’image est plus grande ou plus petite */
+            padding-top: 1000px;  /* Ajuste cette valeur si l’image est plus grande ou plus petite */
         }
 
         /* Ton CSS existant (optionnel à conserver ici) */
