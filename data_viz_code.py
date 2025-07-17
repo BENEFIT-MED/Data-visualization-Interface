@@ -16,12 +16,6 @@ import csv
 import json
 from datetime import datetime
 
-st.set_page_config(
-    page_title="Benefit-med Data Explorer", 
-    layout="wide",
-    page_icon="📊"
-)
-
 st.markdown("""
     <style>
         .sticky-image {
@@ -30,17 +24,23 @@ st.markdown("""
             left: 0;
             width: 100%;
             background-color: white;
-            z-index: 100;
+            z-index: 1000;
             border-bottom: 2px solid orange;
-            padding: 80px 0;
-            text-align: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sticky-image img {
+            width: 100%;
+            height: auto;
+            display: block;
         }
 
         .main-content {
-            padding-top: 100px;  /* Ajuste cette valeur si l’image est plus grande ou plus petite */
+            padding-top: 120px;  /* ajuste selon la hauteur de l’image */
         }
 
-        /* Ton CSS existant (optionnel à conserver ici) */
+        /* Styles supplémentaires existants */
         .main {padding-top: 2rem;}
         .st-b7 {background-color: #ff8c00;}
         .st-c0 {background-color: #ffffff;}
@@ -62,46 +62,23 @@ st.markdown("""
     </style>
 
     <div class="sticky-image">
-        <img src="https://i.imgur.com/F0dqfM8.png" style="height:80px;" />
+        <img src="https://i.imgur.com/F0dqfM8.png" />
     </div>
 """, unsafe_allow_html=True)
 
-# Contenu principal décalé
+# Décaler le contenu
 st.markdown("<div class='main-content'>", unsafe_allow_html=True)
 
+# Titre
 st.markdown("""
     <div style='text-align: center; margin-bottom: 30px;'>
         <h1 style='color: #2c3e50; text-decoration: none; margin-bottom: 10px;'>
-            DATA EXPLORER
+            BENEFIT-MED DATA EXPLORER
         </h1>
         <h3 style='color: #7f8c8d; font-weight: normal;'>
             Interactive statistical analysis and visualization
         </h3>
     </div>
-""", unsafe_allow_html=True)
-
-
-st.markdown("""
-    <style>
-        .main {padding-top: 2rem;}
-        .st-b7 {background-color: #ff8c00;}
-        .st-c0 {background-color: #ffffff;}
-        .sidebar .sidebar-content {background-color: blue;}
-        .reportview-container .main .block-container {padding-top: 2rem;}
-        h1 {color: #2c3e50; border-bottom: 2px solid orange; padding-bottom: 10px;}
-        h3 {color: #2980b9;}
-        .st-bb {background-color: transparent;}
-        .st-at {background-color: orange;}
-        .st-ae {background-color: none;}
-        .st-af {color: black;}
-        .stButton>button {border-radius: 4px; padding: 0.5rem 1rem;}
-        .stDownloadButton>button {background-color: #27ae60; color: white;}
-        .st-eb {padding: 0.5rem;}
-        .st-df {border-radius: 4px;}
-        .stAlert {border-radius: 4px;}
-        .stat-test {background-color: lightblue; padding: 15px; border-radius: 5px; margin-bottom: 15px;}
-        .posthoc-table {margin-top: 20px;}
-    </style>
 """, unsafe_allow_html=True)
 
 def detect_separator(file):
