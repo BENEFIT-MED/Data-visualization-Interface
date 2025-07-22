@@ -16,6 +16,9 @@ import csv
 import json
 from datetime import datetime
 
+st.set_page_config( 
+    layout="wide"
+)
 st.markdown("""
     <style>
         .sticky-image {
