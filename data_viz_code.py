@@ -66,10 +66,8 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Décaler le contenu
 st.markdown("<div class='main-content'>", unsafe_allow_html=True)
 
-# Titre
 st.markdown("""
     <div style='text-align: center; margin-bottom: 10px;'>
         <h1 style='color: #2c3e50; text-decoration: none; margin-bottom: 30px;'>
@@ -82,12 +80,31 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def detect_separator(file):
-    """Detect the separator used in a CSV file."""
-    sample = file.read(1024).decode('utf-8')
-    file.seek(0)
-    sniffer = csv.Sniffer()
-    dialect = sniffer.sniff(sample)
-    return dialect.delimiter
+    """
+    Detect the separator used in a CSV file.
+    Compatible with files uploaded via web interface like Streamlit.
+    """
+    try:
+        # Lire les premiers octets et décoder
+        sample = file.read(2048).decode('utf-8', errors='ignore')
+        file.seek(0)  # Revenir au début du fichier
+
+        # Essayer de détecter automatiquement le séparateur
+        sniffer = csv.Sniffer()
+        dialect = sniffer.sniff(sample, delimiters=[',', ';', '\t', '|', ':', ''])
+        return dialect.delimiter
+
+    except Exception as e:
+        print(f"[AVERTISSEMENT] Impossible de détecter le séparateur automatiquement : {e}")
+        file.seek(0)
+        # Fallback : essayer de détecter par heuristique simple
+        first_line = file.readline().decode('utf-8', errors='ignore')
+        file.seek(0)
+        for sep in [',', ';', '\t', '|', ':', '']:
+            if sep in first_line:
+                return sep
+        return ','  # Par défaut
+
 
 # Creation of a sample dataset
 @st.cache_data
