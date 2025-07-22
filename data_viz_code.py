@@ -537,6 +537,7 @@ if analysis_type == "Comparative":
                             labels={'mean': y_var},
                             hover_data={'mean': ':.2f', 'se': ':.2f', 'std': ':.2f','count': True}) 
                 fig.update_traces(error_y_thickness=1.5, error_y_color='black')
+                fig.update_layout(barmode = "group")
             
             st.plotly_chart(fig, use_container_width=True)
         except Exception as e:
