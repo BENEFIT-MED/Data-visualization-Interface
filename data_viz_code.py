@@ -31,6 +31,7 @@ st.markdown("""
             border-bottom: 2px solid orange;
             padding: 0;
             margin: 0;
+            text-align: center;
         }
 
         .sticky-image img {
@@ -88,25 +89,22 @@ def detect_separator(file):
     Compatible with files uploaded via web interface like Streamlit.
     """
     try:
-        # Lire les premiers octets et décoder
         sample = file.read(2048).decode('utf-8', errors='ignore')
-        file.seek(0)  # Revenir au début du fichier
-
-        # Essayer de détecter automatiquement le séparateur
+        file.seek(0)  
+        
         sniffer = csv.Sniffer()
         dialect = sniffer.sniff(sample, delimiters=[',', ';', '\t', '|', ':', ''])
         return dialect.delimiter
-
     except Exception as e:
         print(f"[AVERTISSEMENT] Impossible de détecter le séparateur automatiquement : {e}")
         file.seek(0)
-        # Fallback : essayer de détecter par heuristique simple
+        
         first_line = file.readline().decode('utf-8', errors='ignore')
         file.seek(0)
         for sep in [',', ';', '\t', '|', ':', '']:
             if sep in first_line:
                 return sep
-        return ','  # Par défaut
+        return ','  
 
 
 # Creation of a sample dataset
